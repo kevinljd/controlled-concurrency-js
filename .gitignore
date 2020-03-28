@@ -1,4 +1,5 @@
 # Ignore node modules
 node_modules/
-
-config.js
+test.js
+config.json
+download-bucket/
