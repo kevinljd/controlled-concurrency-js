@@ -5,14 +5,35 @@ const writeFile = Promise.promisify(fs.writeFile);
 
 const s3 = require('./aws.js');
 
-const bucket = 'test-bucket-2020-kevin';
-const downloadsPrefix = 'download-bucket/';
+function main() {
+    const bucket = 'test-bucket-2020-kevin';
+    const downloadsPrefix = 'download-bucket/';
+
+
+    if (!fs.existsSync(downloadsPrefix)) {
+        fs.mkdirSync(downloadsPrefix);
+    }
+    
+    getFilesList().then(getAll).then(async (resp) => {
+        var files = resp.files;
+        var folders = resp.folders;
+    
+    
+        await createDirs(folders);
+        var allFiles = await downloadFiles(files);
+        return allFiles;
+    }
+    ).then(files => {
+        console.log(files);
+    });
+}
 
 async function getFilesList() {
     try {
         const response = await s3.listObjectsV2({
             Bucket: bucket,
         }).promise();
+        console.log(response);
         return response;
     } catch (e) {
         console.log('our error', e);
@@ -62,48 +83,19 @@ function downloadObject(key) {
         createFile(key, data.Body);
         return {key: key, data: data};
     });
-    // ;
-    // var resp = {
-    //     key: key,
-    //     data: data
-    // };
-    // return resp;
 }
 
 function downloadFiles(keys) {
-    // var paramsList = [];
-    // for (var key of keys) {
-    //     var params = {
-    //         Bucket: bucket,
-    //         Key: key
-    //     };
-    //     paramsList.push(params);
-    // }
     return Promise.map(keys, downloadObject, {concurrency: 4});
 }
 
-function example(a,b) {
+function example(b) {
+    const a = 1;
     return a+b;
 }
 
-function main() {
-    if (!fs.existsSync(downloadsPrefix)) {
-        fs.mkdirSync(downloadsPrefix);
-    }
-    
-    getFilesList().then(getAll).then(async (resp) => {
-        var files = resp.files;
-        var folders = resp.folders;
-    
-    
-        await createDirs(folders);
-        var allFiles = await downloadFiles(files);
-        return allFiles;
-    }
-    ).then(files => {
-        console.log(files);
-    });
-}
+main();
+
 
 module.exports = {
     getFilesList: getFilesList,
@@ -114,27 +106,3 @@ module.exports = {
     downloadFiles: downloadFiles,
     example: example
 }
-
-
-
-
-
-
-
-
-// var params = {
-//     Bucket: 'STRING_VALUE', /* required */
-//     ContinuationToken: 'STRING_VALUE',
-//     Delimiter: 'STRING_VALUE',
-//     EncodingType: url,
-//     FetchOwner: true || false,
-//     MaxKeys: 'NUMBER_VALUE',
-//     Prefix: 'STRING_VALUE',
-//     RequestPayer: requester,
-//     StartAfter: 'STRING_VALUE'
-// };
-
-// AWS.S3.listObjectsV2(params, function(err, data) {
-//     if (err) console.log(err, err.stack); // an error occurred
-//     else     console.log(data);           // successful response
-// });
