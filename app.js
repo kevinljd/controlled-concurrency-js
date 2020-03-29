@@ -4,10 +4,11 @@ const mkdir = Promise.promisify(fs.mkdir);
 const writeFile = Promise.promisify(fs.writeFile);
 
 const s3 = require('./aws.js');
+const bucket = 'test-bucket-2020-kevin';
+const downloadsPrefix = 'download-bucket/';
 
 function main() {
-    const bucket = 'test-bucket-2020-kevin';
-    const downloadsPrefix = 'download-bucket/';
+    
 
 
     if (!fs.existsSync(downloadsPrefix)) {
