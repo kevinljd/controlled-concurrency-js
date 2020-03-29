@@ -9,8 +9,6 @@ const downloadsPrefix = 'download-bucket/';
 
 function main() {
     
-
-
     if (!fs.existsSync(downloadsPrefix)) {
         fs.mkdirSync(downloadsPrefix);
     }
