@@ -3,7 +3,7 @@ const fs = require('fs');
 const mkdir = Promise.promisify(fs.mkdir);
 const writeFile = Promise.promisify(fs.writeFile);
 
-const s3 = require('./s3.js');
+const s3 = require('./aws.js');
 
 const bucket = 'test-bucket-2020-kevin';
 const downloadsPrefix = 'download-bucket/';
@@ -82,24 +82,38 @@ function downloadFiles(keys) {
     return Promise.map(keys, downloadObject, {concurrency: 4});
 }
 
-
-
-if (!fs.existsSync(downloadsPrefix)) {
-    fs.mkdirSync(downloadsPrefix);
+function example(a,b) {
+    return a+b;
 }
 
-getFilesList().then(getAll).then(async (resp) => {
-    var files = resp.files;
-    var folders = resp.folders;
-
-
-    await createDirs(folders);
-    var allFiles = await downloadFiles(files);
-    return allFiles;
+function main() {
+    if (!fs.existsSync(downloadsPrefix)) {
+        fs.mkdirSync(downloadsPrefix);
+    }
+    
+    getFilesList().then(getAll).then(async (resp) => {
+        var files = resp.files;
+        var folders = resp.folders;
+    
+    
+        await createDirs(folders);
+        var allFiles = await downloadFiles(files);
+        return allFiles;
+    }
+    ).then(files => {
+        console.log(files);
+    });
 }
-).then(files => {
-    console.log(files);
-});
+
+module.exports = {
+    getFilesList: getFilesList,
+    getAll: getAll,
+    createDirs: createDirs,
+    createFile: createFile,
+    downloadObject: downloadObject,
+    downloadFiles: downloadFiles,
+    example: example
+}
 
 
 
