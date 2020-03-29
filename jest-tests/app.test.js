@@ -3,8 +3,6 @@ const AWSMock = require('aws-sdk-mock');
 const AWS = require('aws-sdk');
 const S3Downloader = require('../S3Downloader.js');
 
-
-
 const s3Resp = {
     IsTruncated: false,
     Contents: [
@@ -63,14 +61,4 @@ test('getAllWithPrefix should return object containing list of files & list of f
         folders: ['download-bucket/folder/']
     }
     expect(getAll(s3Resp)).toEqual(filesAndFoldersToBeCreated);
-})
-
-
-test('createDirs should create the list of folders given to it.', async () => {
-    var folders = ['download-bucket/, folder/'];
-    await S3Downloader.createDirs(folders);
-    // expect(fs.existsSync("download-bucket/")).toBe(true);
-    // expect(fs.existsSync("folder/")).toBe(true);
-    // fs.rmdirSync("download-bucket/");
-    // fs.rmdirSync("folder/");
 })
